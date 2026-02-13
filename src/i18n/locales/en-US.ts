@@ -1,7 +1,8 @@
 export default {
   components: {
-    example: {
-      title: "Example",
+    recentNotes: {
+      title: "Recent Notes",
+      seeRemainingMore: ({ remaining }: { remaining: number }) => `See ${remaining} more →`,
     },
   },
 };

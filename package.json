@@ -1,23 +1,20 @@
 {
-  "name": "@quartz-community/plugin-template",
+  "name": "@quartz-community/recent-notes",
   "version": "0.1.0",
-  "description": "Template repository for Quartz community plugins.",
+  "description": "Recent Notes component for Quartz - displays recently modified pages",
   "type": "module",
   "license": "MIT",
   "author": "Quartz Community",
-  "homepage": "https://quartz.jzhao.xyz",
+  "homepage": "https://github.com/quartz-community/recent-notes",
   "repository": {
     "type": "git",
-    "url": "https://github.com/quartz-community/plugin-template"
+    "url": "https://github.com/quartz-community/recent-notes"
   },
   "keywords": [
     "quartz",
     "quartz-plugin",
-    "plugin-template",
-    "remark",
-    "rehype",
-    "mdast",
-    "hast"
+    "recent-notes",
+    "component"
   ],
   "files": [
     "dist",
@@ -29,10 +26,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.js"
     },
     "./components": {
       "types": "./dist/components/index.d.ts",
@@ -66,15 +59,8 @@
     }
   },
   "dependencies": {
-    "@quartz-community/types": "github:quartz-community/types",
-    "mdast-util-find-and-replace": "^3.0.1",
-    "rehype-slug": "^6.0.0",
-    "remark-gfm": "^4.0.1",
-    "remark-parse": "^11.0.0",
-    "remark-stringify": "^11.0.0",
-    "unified": "^11.0.5",
-    "unist-util-visit": "^5.0.0",
-    "vfile": "^6.0.3"
+    "@quartz-community/types": "file:../types",
+    "@quartz-community/utils": "github:quartz-community/utils"
   },
   "devDependencies": {
     "@types/hast": "^3.0.4",
@@ -86,8 +72,10 @@
     "eslint-config-prettier": "^9.1.0",
     "preact": "^10.28.2",
     "prettier": "^3.6.2",
+    "sass-embedded": "^1.97.3",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
+    "vfile": "^6.0.3",
     "vitest": "^2.1.9"
   },
   "engines": {
