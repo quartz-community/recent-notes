@@ -10,12 +10,23 @@ npx quartz plugin add github:quartz-community/recent-notes
 
 ## Usage
 
-```ts
-// quartz.layout.ts
-import * as Plugin from "./.quartz/plugins";
+```yaml title="quartz.config.yaml"
+plugins:
+  - source: github:quartz-community/recent-notes
+    enabled: true
+```
 
-// Add to your layout
-Plugin.RecentNotes(); // in the appropriate layout section
+For advanced use cases, you can override in TypeScript:
+
+```ts title="quartz.ts (override)"
+import * as ExternalPlugin from "./.quartz/plugins";
+
+ExternalPlugin.RecentNotes({
+  title: "Recent Notes",
+  limit: 3,
+  showTags: true,
+  linkToMore: false,
+});
 ```
 
 ## Configuration
@@ -31,7 +42,7 @@ Plugin.RecentNotes(); // in the appropriate layout section
 
 ## Documentation
 
-See the [Quartz documentation](https://quartz.jzhao.xyz/) for more information.
+See the [Quartz documentation](https://quartz.jzhao.xyz/features/recent%20notes) for more information.
 
 ## License
 
