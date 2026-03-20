@@ -93,6 +93,13 @@
     "dependencies": [],
     "defaultOrder": 50,
     "defaultEnabled": false,
-    "defaultOptions": {}
+    "defaultOptions": {},
+    "components": {
+      "RecentNotes": {
+        "displayName": "Recent Notes",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 50
+      }
+    }
   }
 }
