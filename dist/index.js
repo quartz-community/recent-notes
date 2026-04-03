@@ -1,5 +1,8 @@
+import { formatDate } from '@quartz-community/utils/date';
 import { joinSegments, simplifySlug as simplifySlug$1 } from '@quartz-community/utils';
 import { jsxs, jsx } from 'preact/jsx-runtime';
+
+// src/components/RecentNotes.tsx
 
 // src/util/lang.ts
 function classNames(...classes) {
@@ -47,13 +50,6 @@ function getDate(cfg, data) {
     );
   }
   return data.dates?.[cfg.defaultDateType];
-}
-function formatDate(d, locale = "en-US") {
-  return d.toLocaleDateString(locale, {
-    year: "numeric",
-    month: "short",
-    day: "2-digit"
-  });
 }
 
 // src/util/sort.ts

@@ -1,8 +1,9 @@
 import type { QuartzComponent, QuartzComponentProps } from "@quartz-community/types";
+import { formatDate } from "@quartz-community/utils/date";
 import { classNames } from "../util/lang";
 import { i18n } from "../i18n";
 import { resolveRelative } from "../util/path";
-import { getDate, formatDate } from "../util/date";
+import { getDate } from "../util/date";
 import { byDateAndAlphabetical } from "../util/sort";
 import style from "./styles/recentNotes.scss";
 

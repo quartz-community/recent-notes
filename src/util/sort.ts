@@ -1,20 +1,10 @@
+import type { SortFn } from "@quartz-community/types";
 import { getDate } from "./date";
 
 interface GlobalConfiguration {
   defaultDateType: string;
   [key: string]: unknown;
 }
-
-interface QuartzPluginData {
-  dates?: Record<string, Date>;
-  frontmatter?: {
-    title?: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-}
-
-export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number;
 
 export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
   return (f1, f2) => {
@@ -26,8 +16,8 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
       return 1;
     }
 
-    const f1Title = f1.frontmatter?.title?.toLowerCase() ?? "";
-    const f2Title = f2.frontmatter?.title?.toLowerCase() ?? "";
+    const f1Title = (f1.frontmatter as { title?: string } | undefined)?.title?.toLowerCase() ?? "";
+    const f2Title = (f2.frontmatter as { title?: string } | undefined)?.title?.toLowerCase() ?? "";
     return f1Title.localeCompare(f2Title);
   };
 }
