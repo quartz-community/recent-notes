@@ -1,17 +1,22 @@
-import type { QuartzComponent, QuartzComponentProps } from "@quartz-community/types";
+import type {
+  QuartzComponent,
+  QuartzComponentProps,
+  QuartzPluginData,
+  SortFn,
+  ValidDateType,
+} from "@quartz-community/types";
 import { formatDate } from "@quartz-community/utils/date";
+import { byDateAndAlphabetical, getDate } from "@quartz-community/utils/sort";
 import { classNames } from "../util/lang";
 import { i18n } from "../i18n";
 import { resolveRelative } from "../util/path";
-import { getDate } from "../util/date";
-import { byDateAndAlphabetical } from "../util/sort";
 import style from "./styles/recentNotes.scss";
 
 type QuartzComponentConstructor<Options extends object | undefined = undefined> = (
   opts: Options,
 ) => QuartzComponent;
 
-interface QuartzPluginData {
+type RecentNotesPluginData = QuartzPluginData & {
   slug?: string;
   filePath?: string;
   dates?: Record<string, Date>;
@@ -21,11 +26,11 @@ interface QuartzPluginData {
     [key: string]: unknown;
   };
   [key: string]: unknown;
-}
+};
 
 interface GlobalConfiguration {
   locale: string;
-  defaultDateType: string;
+  defaultDateType: ValidDateType;
   [key: string]: unknown;
 }
 
@@ -34,16 +39,33 @@ export interface RecentNotesOptions {
   limit: number;
   linkToMore: string | false;
   showTags: boolean;
-  filter: (f: QuartzPluginData) => boolean;
-  sort: (f1: QuartzPluginData, f2: QuartzPluginData) => number;
+  filter: (f: RecentNotesPluginData) => boolean;
+  sort: SortFn;
 }
+
+const withDefaultDateType = (
+  data: RecentNotesPluginData,
+  defaultDateType: ValidDateType,
+): QuartzPluginData => ({
+  ...data,
+  defaultDateType,
+});
+
+const byDateAndAlphabeticalWithConfig = (cfg: GlobalConfiguration): SortFn => {
+  const sortFn = byDateAndAlphabetical();
+  return (f1, f2) =>
+    sortFn(
+      withDefaultDateType(f1 as RecentNotesPluginData, cfg.defaultDateType),
+      withDefaultDateType(f2 as RecentNotesPluginData, cfg.defaultDateType),
+    );
+};
 
 const defaultOptions = (cfg: GlobalConfiguration): RecentNotesOptions => ({
   limit: 3,
   linkToMore: false,
   showTags: true,
   filter: () => true,
-  sort: byDateAndAlphabetical(cfg),
+  sort: byDateAndAlphabeticalWithConfig(cfg),
 });
 
 export default ((userOpts?: Partial<RecentNotesOptions>) => {
@@ -55,7 +77,7 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
   }: QuartzComponentProps & { displayClass?: string }) => {
     const globalCfg = cfg as unknown as GlobalConfiguration;
     const opts = { ...defaultOptions(globalCfg), ...userOpts };
-    const pages = (allFiles as QuartzPluginData[]).filter(opts.filter).sort(opts.sort);
+    const pages = (allFiles as RecentNotesPluginData[]).filter(opts.filter).sort(opts.sort);
     const remaining = Math.max(0, pages.length - opts.limit);
     const slug = fileData.slug as string | undefined;
     const locale = cfg.locale ?? "en-US";
@@ -79,8 +101,15 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
                   </div>
                   {page.dates && (
                     <p class="meta">
-                      <time datetime={getDate(globalCfg, page)?.toISOString()}>
-                        {formatDate(getDate(globalCfg, page)!, locale)}
+                      <time
+                        datetime={getDate(
+                          withDefaultDateType(page, globalCfg.defaultDateType),
+                        )?.toISOString()}
+                      >
+                        {formatDate(
+                          getDate(withDefaultDateType(page, globalCfg.defaultDateType))!,
+                          locale,
+                        )}
                       </time>
                     </p>
                   )}
