@@ -1,7 +1,7 @@
-import { QuartzComponent } from '@quartz-community/types';
+import { QuartzPluginData, SortFn, QuartzComponent } from '@quartz-community/types';
 export { QuartzComponent, QuartzComponentProps, StringResource } from '@quartz-community/types';
 
-interface QuartzPluginData {
+type RecentNotesPluginData = QuartzPluginData & {
     slug?: string;
     filePath?: string;
     dates?: Record<string, Date>;
@@ -11,14 +11,14 @@ interface QuartzPluginData {
         [key: string]: unknown;
     };
     [key: string]: unknown;
-}
+};
 interface RecentNotesOptions {
     title?: string;
     limit: number;
     linkToMore: string | false;
     showTags: boolean;
-    filter: (f: QuartzPluginData) => boolean;
-    sort: (f1: QuartzPluginData, f2: QuartzPluginData) => number;
+    filter: (f: RecentNotesPluginData) => boolean;
+    sort: SortFn;
 }
 declare const _default: (userOpts?: Partial<RecentNotesOptions>) => QuartzComponent;
 

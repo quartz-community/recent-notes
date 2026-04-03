@@ -1,4 +1,5 @@
 import { formatDate } from '@quartz-community/utils/date';
+import { getDate, byDateAndAlphabetical } from '@quartz-community/utils/sort';
 import { joinSegments, simplifySlug as simplifySlug$1 } from '@quartz-community/utils';
 import { jsxs, jsx } from 'preact/jsx-runtime';
 
@@ -42,40 +43,25 @@ function pathToRoot(slug) {
   return rootPath;
 }
 
-// src/util/date.ts
-function getDate(cfg, data) {
-  if (!cfg.defaultDateType) {
-    throw new Error(
-      "Field 'defaultDateType' was not set in the configuration object of quartz.config.ts."
-    );
-  }
-  return data.dates?.[cfg.defaultDateType];
-}
-
-// src/util/sort.ts
-function byDateAndAlphabetical(cfg) {
-  return (f1, f2) => {
-    if (f1.dates && f2.dates) {
-      return getDate(cfg, f2).getTime() - getDate(cfg, f1).getTime();
-    } else if (f1.dates && !f2.dates) {
-      return -1;
-    } else if (!f1.dates && f2.dates) {
-      return 1;
-    }
-    const f1Title = f1.frontmatter?.title?.toLowerCase() ?? "";
-    const f2Title = f2.frontmatter?.title?.toLowerCase() ?? "";
-    return f1Title.localeCompare(f2Title);
-  };
-}
-
 // src/components/styles/recentNotes.scss
 var recentNotes_default = ".recent-notes > h3 {\n  margin: 0.5rem 0 0 0;\n  font-size: 1rem;\n}\n.recent-notes > ul.recent-ul {\n  list-style: none;\n  margin-top: 1rem;\n  padding-left: 0;\n}\n.recent-notes > ul.recent-ul > li {\n  margin: 1rem 0;\n}\n.recent-notes > ul.recent-ul > li .section > .desc > h3 > a {\n  background-color: transparent;\n}\n.recent-notes > ul.recent-ul > li .section > .meta {\n  margin: 0 0 0.5rem 0;\n  opacity: 0.6;\n}";
+var withDefaultDateType = (data, defaultDateType) => ({
+  ...data,
+  defaultDateType
+});
+var byDateAndAlphabeticalWithConfig = (cfg) => {
+  const sortFn = byDateAndAlphabetical();
+  return (f1, f2) => sortFn(
+    withDefaultDateType(f1, cfg.defaultDateType),
+    withDefaultDateType(f2, cfg.defaultDateType)
+  );
+};
 var defaultOptions = (cfg) => ({
   limit: 3,
   linkToMore: false,
   showTags: true,
   filter: () => true,
-  sort: byDateAndAlphabetical(cfg)
+  sort: byDateAndAlphabeticalWithConfig(cfg)
 });
 var RecentNotes_default = ((userOpts) => {
   const RecentNotes = ({
@@ -97,7 +83,18 @@ var RecentNotes_default = ((userOpts) => {
         const tags = page.frontmatter?.tags ?? [];
         return /* @__PURE__ */ jsx("li", { class: "recent-li", children: /* @__PURE__ */ jsxs("div", { class: "section", children: [
           /* @__PURE__ */ jsx("div", { class: "desc", children: /* @__PURE__ */ jsx("h3", { children: /* @__PURE__ */ jsx("a", { href: resolveRelative(slug, page.slug), class: "internal", children: title }) }) }),
-          page.dates && /* @__PURE__ */ jsx("p", { class: "meta", children: /* @__PURE__ */ jsx("time", { datetime: getDate(globalCfg, page)?.toISOString(), children: formatDate(getDate(globalCfg, page), locale) }) }),
+          page.dates && /* @__PURE__ */ jsx("p", { class: "meta", children: /* @__PURE__ */ jsx(
+            "time",
+            {
+              datetime: getDate(
+                withDefaultDateType(page, globalCfg.defaultDateType)
+              )?.toISOString(),
+              children: formatDate(
+                getDate(withDefaultDateType(page, globalCfg.defaultDateType)),
+                locale
+              )
+            }
+          ) }),
           opts.showTags && /* @__PURE__ */ jsx("ul", { class: "tags", children: tags.map((tag) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsx("a", { class: "internal tag-link", href: resolveRelative(slug, `tags/${tag}`), children: tag }) })) })
         ] }) });
       }) }),
