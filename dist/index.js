@@ -83,12 +83,12 @@ var RecentNotes_default = ((userOpts) => {
         const tags = page.frontmatter?.tags ?? [];
         return /* @__PURE__ */ jsx("li", { class: "recent-li", children: /* @__PURE__ */ jsxs("div", { class: "section", children: [
           /* @__PURE__ */ jsx("div", { class: "desc", children: /* @__PURE__ */ jsx("h3", { children: /* @__PURE__ */ jsx("a", { href: resolveRelative(slug, page.slug), class: "internal", children: title }) }) }),
-          page.dates && /* @__PURE__ */ jsx("p", { class: "meta", children: /* @__PURE__ */ jsx(
+          page.dates && getDate(withDefaultDateType(page, globalCfg.defaultDateType)) && /* @__PURE__ */ jsx("p", { class: "meta", children: /* @__PURE__ */ jsx(
             "time",
             {
               datetime: getDate(
                 withDefaultDateType(page, globalCfg.defaultDateType)
-              )?.toISOString(),
+              ).toISOString(),
               children: formatDate(
                 getDate(withDefaultDateType(page, globalCfg.defaultDateType)),
                 locale

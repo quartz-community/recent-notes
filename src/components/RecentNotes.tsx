@@ -99,12 +99,12 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
                       </a>
                     </h3>
                   </div>
-                  {page.dates && (
+                  {page.dates && getDate(withDefaultDateType(page, globalCfg.defaultDateType)) && (
                     <p class="meta">
                       <time
                         datetime={getDate(
                           withDefaultDateType(page, globalCfg.defaultDateType),
-                        )?.toISOString()}
+                        )!.toISOString()}
                       >
                         {formatDate(
                           getDate(withDefaultDateType(page, globalCfg.defaultDateType))!,
