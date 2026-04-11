@@ -446,6 +446,9 @@ var withDefaultDateType = (data, defaultDateType) => ({
   ...data,
   defaultDateType
 });
+function filterListedPages(pages) {
+  return pages.filter((p) => p.unlisted !== true);
+}
 var byDateAndAlphabeticalWithConfig = (cfg) => {
   const sortFn = byDateAndAlphabetical();
   return (f1, f2) => sortFn(
@@ -469,7 +472,7 @@ var RecentNotes_default = ((userOpts) => {
   }) => {
     const globalCfg = cfg;
     const opts = { ...defaultOptions(globalCfg), ...userOpts };
-    const pages = allFiles.filter(opts.filter).sort(opts.sort);
+    const pages = filterListedPages(allFiles).filter(opts.filter).sort(opts.sort);
     const remaining = Math.max(0, pages.length - opts.limit);
     const slug2 = fileData.slug;
     const locale = cfg.locale ?? "en-US";

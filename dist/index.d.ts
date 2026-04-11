@@ -20,6 +20,7 @@ interface RecentNotesOptions {
     filter: (f: RecentNotesPluginData) => boolean;
     sort: SortFn;
 }
+declare function filterListedPages<T>(pages: T[]): T[];
 declare const _default: (userOpts?: Partial<RecentNotesOptions>) => QuartzComponent;
 
-export { _default as RecentNotes, type RecentNotesOptions };
+export { _default as RecentNotes, type RecentNotesOptions, filterListedPages };

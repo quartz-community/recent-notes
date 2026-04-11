@@ -51,6 +51,10 @@ const withDefaultDateType = (
   defaultDateType,
 });
 
+export function filterListedPages<T>(pages: T[]): T[] {
+  return pages.filter((p) => (p as { unlisted?: unknown }).unlisted !== true);
+}
+
 const byDateAndAlphabeticalWithConfig = (cfg: GlobalConfiguration): SortFn => {
   const sortFn = byDateAndAlphabetical();
   return (f1, f2) =>
@@ -77,7 +81,9 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
   }: QuartzComponentProps & { displayClass?: string }) => {
     const globalCfg = cfg as unknown as GlobalConfiguration;
     const opts = { ...defaultOptions(globalCfg), ...userOpts };
-    const pages = (allFiles as RecentNotesPluginData[]).filter(opts.filter).sort(opts.sort);
+    const pages = filterListedPages(allFiles as RecentNotesPluginData[])
+      .filter(opts.filter)
+      .sort(opts.sort);
     const remaining = Math.max(0, pages.length - opts.limit);
     const slug = fileData.slug as string | undefined;
     const locale = cfg.locale ?? "en-US";
