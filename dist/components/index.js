@@ -36,6 +36,14 @@ function byDateAndAlphabetical() {
   };
 }
 
+// node_modules/@quartz-community/utils/dist/path.js
+function endsWith(s, suffix) {
+  return s === suffix || s.endsWith("/" + suffix);
+}
+function isFolderPath(fplike) {
+  return fplike.endsWith("/") || endsWith(fplike, "index") || endsWith(fplike, "index.md") || endsWith(fplike, "index.html");
+}
+
 // node_modules/@quartz-community/utils/dist/lang.js
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -404,11 +412,11 @@ function joinSegments(...args) {
   }
   return joined;
 }
-function endsWith(s, suffix) {
+function endsWith2(s, suffix) {
   return s === suffix || s.endsWith("/" + suffix);
 }
 function trimSuffix(s, suffix) {
-  if (endsWith(s, suffix)) {
+  if (endsWith2(s, suffix)) {
     s = s.slice(0, -suffix.length);
   }
   return s;
@@ -449,6 +457,14 @@ var withDefaultDateType = (data, defaultDateType) => ({
 function filterListedPages(pages) {
   return pages.filter((p) => p.unlisted !== true);
 }
+function isTagPageSlug(slug2) {
+  if (!slug2) return false;
+  return slug2 === "tags" || slug2 === "tags/index" || slug2.startsWith("tags/");
+}
+function isFolderPageSlug(slug2) {
+  if (!slug2) return false;
+  return isFolderPath(slug2);
+}
 var byDateAndAlphabeticalWithConfig = (cfg) => {
   const sortFn = byDateAndAlphabetical();
   return (f1, f2) => sortFn(
@@ -460,6 +476,8 @@ var defaultOptions = (cfg) => ({
   limit: 3,
   linkToMore: false,
   showTags: true,
+  hideTagPages: false,
+  hideFolderPages: false,
   filter: () => true,
   sort: byDateAndAlphabeticalWithConfig(cfg)
 });
@@ -472,7 +490,7 @@ var RecentNotes_default = ((userOpts) => {
   }) => {
     const globalCfg = cfg;
     const opts = { ...defaultOptions(globalCfg), ...userOpts };
-    const pages = filterListedPages(allFiles).filter(opts.filter).sort(opts.sort);
+    const pages = filterListedPages(allFiles).filter((p) => !opts.hideTagPages || !isTagPageSlug(p.slug)).filter((p) => !opts.hideFolderPages || !isFolderPageSlug(p.slug)).filter(opts.filter).sort(opts.sort);
     const remaining = Math.max(0, pages.length - opts.limit);
     const slug2 = fileData.slug;
     const locale = cfg.locale ?? "en-US";

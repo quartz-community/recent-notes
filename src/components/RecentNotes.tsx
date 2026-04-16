@@ -9,6 +9,7 @@ import type {
 } from "@quartz-community/types";
 import { formatDate } from "@quartz-community/utils/date";
 import { byDateAndAlphabetical, getDate } from "@quartz-community/utils/sort";
+import { isFolderPath } from "@quartz-community/utils/path";
 import { classNames } from "../util/lang";
 import { i18n } from "../i18n";
 import { resolveRelative } from "../util/path";
@@ -26,6 +27,8 @@ export interface RecentNotesOptions {
   limit: number;
   linkToMore: string | false;
   showTags: boolean;
+  hideTagPages: boolean;
+  hideFolderPages: boolean;
   filter: (f: RecentNotesPluginData) => boolean;
   sort: SortFn;
 }
@@ -42,6 +45,18 @@ export function filterListedPages<T>(pages: T[]): T[] {
   return pages.filter((p) => (p as { unlisted?: unknown }).unlisted !== true);
 }
 
+/** True for Quartz tag-index slugs: `tags`, `tags/index`, or `tags/<anything>`. */
+export function isTagPageSlug(slug: string | undefined): boolean {
+  if (!slug) return false;
+  return slug === "tags" || slug === "tags/index" || slug.startsWith("tags/");
+}
+
+/** True for Quartz folder-index slugs; delegates to `isFolderPath` from `@quartz-community/utils`. */
+export function isFolderPageSlug(slug: string | undefined): boolean {
+  if (!slug) return false;
+  return isFolderPath(slug);
+}
+
 const byDateAndAlphabeticalWithConfig = (cfg: ResolvedGlobalConfiguration): SortFn => {
   const sortFn = byDateAndAlphabetical();
   return (f1, f2) =>
@@ -55,6 +70,8 @@ const defaultOptions = (cfg: ResolvedGlobalConfiguration): RecentNotesOptions =>
   limit: 3,
   linkToMore: false,
   showTags: true,
+  hideTagPages: false,
+  hideFolderPages: false,
   filter: () => true,
   sort: byDateAndAlphabeticalWithConfig(cfg),
 });
@@ -69,6 +86,8 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
     const globalCfg = cfg as ResolvedGlobalConfiguration;
     const opts = { ...defaultOptions(globalCfg), ...userOpts };
     const pages = filterListedPages(allFiles as RecentNotesPluginData[])
+      .filter((p) => !opts.hideTagPages || !isTagPageSlug(p.slug))
+      .filter((p) => !opts.hideFolderPages || !isFolderPageSlug(p.slug))
       .filter(opts.filter)
       .sort(opts.sort);
     const remaining = Math.max(0, pages.length - opts.limit);
