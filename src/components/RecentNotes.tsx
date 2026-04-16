@@ -1,5 +1,7 @@
 import type {
+  GlobalConfiguration,
   QuartzComponent,
+  QuartzComponentConstructor,
   QuartzComponentProps,
   QuartzPluginData,
   SortFn,
@@ -12,27 +14,12 @@ import { i18n } from "../i18n";
 import { resolveRelative } from "../util/path";
 import style from "./styles/recentNotes.scss";
 
-type QuartzComponentConstructor<Options extends object | undefined = undefined> = (
-  opts: Options,
-) => QuartzComponent;
+type RecentNotesPluginData = QuartzPluginData & Record<string, unknown>;
 
-type RecentNotesPluginData = QuartzPluginData & {
-  slug?: string;
-  filePath?: string;
-  dates?: Record<string, Date>;
-  frontmatter?: {
-    title?: string;
-    tags?: string[];
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-};
-
-interface GlobalConfiguration {
+type ResolvedGlobalConfiguration = GlobalConfiguration & {
   locale: string;
   defaultDateType: ValidDateType;
-  [key: string]: unknown;
-}
+};
 
 export interface RecentNotesOptions {
   title?: string;
@@ -55,7 +42,7 @@ export function filterListedPages<T>(pages: T[]): T[] {
   return pages.filter((p) => (p as { unlisted?: unknown }).unlisted !== true);
 }
 
-const byDateAndAlphabeticalWithConfig = (cfg: GlobalConfiguration): SortFn => {
+const byDateAndAlphabeticalWithConfig = (cfg: ResolvedGlobalConfiguration): SortFn => {
   const sortFn = byDateAndAlphabetical();
   return (f1, f2) =>
     sortFn(
@@ -64,7 +51,7 @@ const byDateAndAlphabeticalWithConfig = (cfg: GlobalConfiguration): SortFn => {
     );
 };
 
-const defaultOptions = (cfg: GlobalConfiguration): RecentNotesOptions => ({
+const defaultOptions = (cfg: ResolvedGlobalConfiguration): RecentNotesOptions => ({
   limit: 3,
   linkToMore: false,
   showTags: true,
@@ -79,7 +66,7 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
     displayClass,
     cfg,
   }: QuartzComponentProps & { displayClass?: string }) => {
-    const globalCfg = cfg as unknown as GlobalConfiguration;
+    const globalCfg = cfg as ResolvedGlobalConfiguration;
     const opts = { ...defaultOptions(globalCfg), ...userOpts };
     const pages = filterListedPages(allFiles as RecentNotesPluginData[])
       .filter(opts.filter)

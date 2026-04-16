@@ -1,17 +1,7 @@
 import { QuartzPluginData, SortFn, QuartzComponent } from '@quartz-community/types';
 export { QuartzComponent, QuartzComponentProps, StringResource } from '@quartz-community/types';
 
-type RecentNotesPluginData = QuartzPluginData & {
-    slug?: string;
-    filePath?: string;
-    dates?: Record<string, Date>;
-    frontmatter?: {
-        title?: string;
-        tags?: string[];
-        [key: string]: unknown;
-    };
-    [key: string]: unknown;
-};
+type RecentNotesPluginData = QuartzPluginData & Record<string, unknown>;
 interface RecentNotesOptions {
     title?: string;
     limit: number;
