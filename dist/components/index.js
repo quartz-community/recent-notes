@@ -1,9 +1,6 @@
-import { jsxs, jsx } from 'preact/jsx-runtime';
-import 'preact';
-
 // node_modules/@quartz-community/utils/dist/date.js
-function formatDate(d, locale = "en-US") {
-  return d.toLocaleDateString(locale, {
+function formatDate(d2, locale = "en-US") {
+  return d2.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "2-digit"
@@ -20,9 +17,9 @@ function getDate(data) {
   return dates?.[defaultDateType];
 }
 function byDateAndAlphabetical() {
-  return (f1, f2) => {
+  return (f1, f22) => {
     const f1Date = getDate(f1);
-    const f2Date = getDate(f2);
+    const f2Date = getDate(f22);
     if (f1Date && f2Date) {
       return f2Date.getTime() - f1Date.getTime();
     } else if (f1Date && !f2Date) {
@@ -31,14 +28,14 @@ function byDateAndAlphabetical() {
       return 1;
     }
     const f1Title = (f1.frontmatter?.title ?? "").toLowerCase();
-    const f2Title = (f2.frontmatter?.title ?? "").toLowerCase();
+    const f2Title = (f22.frontmatter?.title ?? "").toLowerCase();
     return f1Title.localeCompare(f2Title);
   };
 }
 
 // node_modules/@quartz-community/utils/dist/path.js
-function endsWith(s, suffix) {
-  return s === suffix || s.endsWith("/" + suffix);
+function endsWith(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
 }
 function isFolderPath(fplike) {
   return fplike.endsWith("/") || endsWith(fplike, "index") || endsWith(fplike, "index.md") || endsWith(fplike, "index.html");
@@ -393,6 +390,28 @@ var locales = {
 function i18n(locale) {
   return locales[locale] || en_US_default;
 }
+var l;
+l = { __e: function(n2, l2, u3, t2) {
+  for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
+    if ((r2 = i2.constructor) && null != r2.getDerivedStateFromError && (i2.setState(r2.getDerivedStateFromError(n2)), o2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n2, t2 || {}), o2 = i2.__d), o2) return i2.__E = i2;
+  } catch (l3) {
+    n2 = l3;
+  }
+  throw n2;
+} }, "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, Math.random().toString(8);
+
+// node_modules/preact/jsx-runtime/dist/jsxRuntime.mjs
+var f2 = 0;
+function u2(e2, t2, n2, o2, i2, u3) {
+  t2 || (t2 = {});
+  var a2, c2, p2 = t2;
+  if ("ref" in p2) for (c2 in p2 = {}, t2) "ref" == c2 ? a2 = t2[c2] : p2[c2] = t2[c2];
+  var l2 = { type: e2, props: p2, key: n2, ref: a2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: --f2, __i: -1, __u: 0, __source: i2, __self: u3 };
+  if ("function" == typeof e2 && (a2 = e2.defaultProps)) for (c2 in a2) void 0 === p2[c2] && (p2[c2] = a2[c2]);
+  return l.vnode && l.vnode(l2), l2;
+}
+
+// node_modules/@quartz-community/utils/dist/index.js
 function simplifySlug(fp) {
   const res = stripSlashes(trimSuffix(fp, "index"), true);
   return res.length === 0 ? "/" : res;
@@ -412,23 +431,23 @@ function joinSegments(...args) {
   }
   return joined;
 }
-function endsWith2(s, suffix) {
-  return s === suffix || s.endsWith("/" + suffix);
+function endsWith2(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
 }
-function trimSuffix(s, suffix) {
-  if (endsWith2(s, suffix)) {
-    s = s.slice(0, -suffix.length);
+function trimSuffix(s2, suffix) {
+  if (endsWith2(s2, suffix)) {
+    s2 = s2.slice(0, -suffix.length);
   }
-  return s;
+  return s2;
 }
-function stripSlashes(s, onlyStripPrefix) {
-  if (s.startsWith("/")) {
-    s = s.substring(1);
+function stripSlashes(s2, onlyStripPrefix) {
+  if (s2.startsWith("/")) {
+    s2 = s2.substring(1);
   }
-  if (!onlyStripPrefix && s.endsWith("/")) {
-    s = s.slice(0, -1);
+  if (!onlyStripPrefix && s2.endsWith("/")) {
+    s2 = s2.slice(0, -1);
   }
-  return s;
+  return s2;
 }
 
 // src/util/path.ts
@@ -441,7 +460,7 @@ function resolveRelative(current, target) {
   return joinSegments(rootPath, simplified);
 }
 function pathToRoot(slug2) {
-  let rootPath = slug2.split("/").filter((x) => x !== "").slice(0, -1).map((_) => "..").join("/");
+  let rootPath = slug2.split("/").filter((x2) => x2 !== "").slice(0, -1).map((_2) => "..").join("/");
   if (rootPath.length === 0) {
     rootPath = ".";
   }
@@ -450,12 +469,14 @@ function pathToRoot(slug2) {
 
 // src/components/styles/recentNotes.scss
 var recentNotes_default = ".recent-notes > h3 {\n  margin: 0.5rem 0 0 0;\n  font-size: 1rem;\n}\n.recent-notes > ul.recent-ul {\n  list-style: none;\n  margin-top: 1rem;\n  padding-left: 0;\n}\n.recent-notes > ul.recent-ul > li {\n  margin: 1rem 0;\n}\n.recent-notes > ul.recent-ul > li .section > .desc > h3 > a {\n  background-color: transparent;\n}\n.recent-notes > ul.recent-ul > li .section > .meta {\n  margin: 0 0 0.5rem 0;\n  opacity: 0.6;\n}";
+
+// src/components/RecentNotes.tsx
 var withDefaultDateType = (data, defaultDateType) => ({
   ...data,
   defaultDateType
 });
 function filterListedPages(pages) {
-  return pages.filter((p) => p.unlisted !== true);
+  return pages.filter((p2) => p2.unlisted !== true);
 }
 function isTagPageSlug(slug2) {
   if (!slug2) return false;
@@ -467,9 +488,9 @@ function isFolderPageSlug(slug2) {
 }
 var byDateAndAlphabeticalWithConfig = (cfg) => {
   const sortFn = byDateAndAlphabetical();
-  return (f1, f2) => sortFn(
+  return (f1, f22) => sortFn(
     withDefaultDateType(f1, cfg.defaultDateType),
-    withDefaultDateType(f2, cfg.defaultDateType)
+    withDefaultDateType(f22, cfg.defaultDateType)
   );
 };
 var defaultOptions = (cfg) => ({
@@ -490,18 +511,18 @@ var RecentNotes_default = ((userOpts) => {
   }) => {
     const globalCfg = cfg;
     const opts = { ...defaultOptions(globalCfg), ...userOpts };
-    const pages = filterListedPages(allFiles).filter((p) => !opts.hideTagPages || !isTagPageSlug(p.slug)).filter((p) => !opts.hideFolderPages || !isFolderPageSlug(p.slug)).filter(opts.filter).sort(opts.sort);
+    const pages = filterListedPages(allFiles).filter((p2) => !opts.hideTagPages || !isTagPageSlug(p2.slug)).filter((p2) => !opts.hideFolderPages || !isFolderPageSlug(p2.slug)).filter(opts.filter).sort(opts.sort);
     const remaining = Math.max(0, pages.length - opts.limit);
     const slug2 = fileData.slug;
     const locale = cfg.locale ?? "en-US";
-    return /* @__PURE__ */ jsxs("div", { class: classNames(displayClass, "recent-notes"), children: [
-      /* @__PURE__ */ jsx("h3", { children: opts.title ?? i18n(locale).components.recentNotes.title }),
-      /* @__PURE__ */ jsx("ul", { class: "recent-ul", children: pages.slice(0, opts.limit).map((page) => {
+    return /* @__PURE__ */ u2("div", { class: classNames(displayClass, "recent-notes"), children: [
+      /* @__PURE__ */ u2("h3", { children: opts.title ?? i18n(locale).components.recentNotes.title }),
+      /* @__PURE__ */ u2("ul", { class: "recent-ul", children: pages.slice(0, opts.limit).map((page) => {
         const title = page.frontmatter?.title ?? "Untitled";
         const tags = page.frontmatter?.tags ?? [];
-        return /* @__PURE__ */ jsx("li", { class: "recent-li", children: /* @__PURE__ */ jsxs("div", { class: "section", children: [
-          /* @__PURE__ */ jsx("div", { class: "desc", children: /* @__PURE__ */ jsx("h3", { children: /* @__PURE__ */ jsx("a", { href: resolveRelative(slug2, page.slug), class: "internal", children: title }) }) }),
-          page.dates && getDate(withDefaultDateType(page, globalCfg.defaultDateType)) && /* @__PURE__ */ jsx("p", { class: "meta", children: /* @__PURE__ */ jsx(
+        return /* @__PURE__ */ u2("li", { class: "recent-li", children: /* @__PURE__ */ u2("div", { class: "section", children: [
+          /* @__PURE__ */ u2("div", { class: "desc", children: /* @__PURE__ */ u2("h3", { children: /* @__PURE__ */ u2("a", { href: resolveRelative(slug2, page.slug), class: "internal", children: title }) }) }),
+          page.dates && getDate(withDefaultDateType(page, globalCfg.defaultDateType)) && /* @__PURE__ */ u2("p", { class: "meta", children: /* @__PURE__ */ u2(
             "time",
             {
               datetime: getDate(
@@ -513,10 +534,10 @@ var RecentNotes_default = ((userOpts) => {
               )
             }
           ) }),
-          opts.showTags && /* @__PURE__ */ jsx("ul", { class: "tags", children: tags.map((tag) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsx("a", { class: "internal tag-link", href: resolveRelative(slug2, `tags/${tag}`), children: tag }) })) })
+          opts.showTags && /* @__PURE__ */ u2("ul", { class: "tags", children: tags.map((tag) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { class: "internal tag-link", href: resolveRelative(slug2, `tags/${tag}`), children: tag }) })) })
         ] }) });
       }) }),
-      opts.linkToMore && remaining > 0 && /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: resolveRelative(slug2, opts.linkToMore), children: i18n(locale).components.recentNotes.seeRemainingMore({ remaining }) }) })
+      opts.linkToMore && remaining > 0 && /* @__PURE__ */ u2("p", { children: /* @__PURE__ */ u2("a", { href: resolveRelative(slug2, opts.linkToMore), children: i18n(locale).components.recentNotes.seeRemainingMore({ remaining }) }) })
     ] });
   };
   RecentNotes.css = recentNotes_default;
