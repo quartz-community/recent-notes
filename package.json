@@ -93,12 +93,38 @@
     "dependencies": [],
     "defaultOrder": 50,
     "defaultEnabled": false,
-    "defaultOptions": {},
+    "defaultOptions": {
+      "limit": 3,
+      "linkToMore": false,
+      "showTags": true,
+      "hideTagPages": false,
+      "hideFolderPages": false
+    },
     "components": {
       "RecentNotes": {
         "displayName": "Recent Notes",
         "defaultPosition": "afterBody",
         "defaultPriority": 50
+      }
+    },
+    "optionSchema": {
+      "title": {
+        "type": "string"
+      },
+      "limit": {
+        "type": "number"
+      },
+      "linkToMore": {
+        "type": "string"
+      },
+      "showTags": {
+        "type": "boolean"
+      },
+      "hideTagPages": {
+        "type": "boolean"
+      },
+      "hideFolderPages": {
+        "type": "boolean"
       }
     }
   }
