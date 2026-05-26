@@ -17,11 +17,6 @@ import style from "./styles/recentNotes.scss";
 
 type RecentNotesPluginData = QuartzPluginData & Record<string, unknown>;
 
-type ResolvedGlobalConfiguration = GlobalConfiguration & {
-  locale: string;
-  defaultDateType: ValidDateType;
-};
-
 export interface RecentNotesOptions {
   title?: string;
   limit: number;
@@ -33,13 +28,32 @@ export interface RecentNotesOptions {
   sort: SortFn;
 }
 
-const withDefaultDateType = (
+/**
+ * Resolve the defaultDateType for a given page, preferring the per-file value
+ * set by the CreatedModifiedDate transformer, falling back to the global config.
+ */
+export function resolveDefaultDateType(
   data: RecentNotesPluginData,
-  defaultDateType: ValidDateType,
-): QuartzPluginData => ({
-  ...data,
-  defaultDateType,
-});
+  cfg: GlobalConfiguration,
+): ValidDateType | undefined {
+  return (
+    (data.defaultDateType as ValidDateType | undefined) ??
+    ((cfg as Record<string, unknown>).defaultDateType as ValidDateType | undefined)
+  );
+}
+
+/**
+ * Return a copy of the page data with the resolved defaultDateType applied,
+ * so that getDate() from @quartz-community/utils/sort can read it.
+ */
+export const withResolvedDateType = (
+  data: RecentNotesPluginData,
+  cfg: GlobalConfiguration,
+): QuartzPluginData => {
+  const resolved = resolveDefaultDateType(data, cfg);
+  if (!resolved) return data as QuartzPluginData;
+  return { ...data, defaultDateType: resolved };
+};
 
 export function filterListedPages<T>(pages: T[]): T[] {
   return pages.filter((p) => (p as { unlisted?: unknown }).unlisted !== true);
@@ -57,16 +71,16 @@ export function isFolderPageSlug(slug: string | undefined): boolean {
   return isFolderPath(slug);
 }
 
-const byDateAndAlphabeticalWithConfig = (cfg: ResolvedGlobalConfiguration): SortFn => {
+const byDateAndAlphabeticalWithConfig = (cfg: GlobalConfiguration): SortFn => {
   const sortFn = byDateAndAlphabetical();
   return (f1, f2) =>
     sortFn(
-      withDefaultDateType(f1 as RecentNotesPluginData, cfg.defaultDateType),
-      withDefaultDateType(f2 as RecentNotesPluginData, cfg.defaultDateType),
+      withResolvedDateType(f1 as RecentNotesPluginData, cfg),
+      withResolvedDateType(f2 as RecentNotesPluginData, cfg),
     );
 };
 
-const defaultOptions = (cfg: ResolvedGlobalConfiguration): RecentNotesOptions => ({
+const defaultOptions = (cfg: GlobalConfiguration): RecentNotesOptions => ({
   limit: 3,
   linkToMore: false,
   showTags: true,
@@ -83,8 +97,7 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
     displayClass,
     cfg,
   }: QuartzComponentProps & { displayClass?: string }) => {
-    const globalCfg = cfg as ResolvedGlobalConfiguration;
-    const opts = { ...defaultOptions(globalCfg), ...userOpts };
+    const opts = { ...defaultOptions(cfg), ...userOpts };
     const pages = filterListedPages(allFiles as RecentNotesPluginData[])
       .filter((p) => !opts.hideTagPages || !isTagPageSlug(p.slug))
       .filter((p) => !opts.hideFolderPages || !isFolderPageSlug(p.slug))
@@ -111,17 +124,10 @@ export default ((userOpts?: Partial<RecentNotesOptions>) => {
                       </a>
                     </h3>
                   </div>
-                  {page.dates && getDate(withDefaultDateType(page, globalCfg.defaultDateType)) && (
+                  {page.dates && getDate(withResolvedDateType(page, cfg)) && (
                     <p class="meta">
-                      <time
-                        datetime={getDate(
-                          withDefaultDateType(page, globalCfg.defaultDateType),
-                        )!.toISOString()}
-                      >
-                        {formatDate(
-                          getDate(withDefaultDateType(page, globalCfg.defaultDateType))!,
-                          locale,
-                        )}
+                      <time datetime={getDate(withResolvedDateType(page, cfg))!.toISOString()}>
+                        {formatDate(getDate(withResolvedDateType(page, cfg))!, locale)}
                       </time>
                     </p>
                   )}
