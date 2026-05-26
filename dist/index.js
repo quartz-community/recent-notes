@@ -471,10 +471,14 @@ function pathToRoot(slug2) {
 var recentNotes_default = ".recent-notes > h3 {\n  margin: 0.5rem 0 0 0;\n  font-size: 1rem;\n}\n.recent-notes > ul.recent-ul {\n  list-style: none;\n  margin-top: 1rem;\n  padding-left: 0;\n}\n.recent-notes > ul.recent-ul > li {\n  margin: 1rem 0;\n}\n.recent-notes > ul.recent-ul > li .section > .desc > h3 > a {\n  background-color: transparent;\n}\n.recent-notes > ul.recent-ul > li .section > .meta {\n  margin: 0 0 0.5rem 0;\n  opacity: 0.6;\n}";
 
 // src/components/RecentNotes.tsx
-var withDefaultDateType = (data, defaultDateType) => ({
-  ...data,
-  defaultDateType
-});
+function resolveDefaultDateType(data, cfg) {
+  return data.defaultDateType ?? cfg.defaultDateType;
+}
+var withResolvedDateType = (data, cfg) => {
+  const resolved = resolveDefaultDateType(data, cfg);
+  if (!resolved) return data;
+  return { ...data, defaultDateType: resolved };
+};
 function filterListedPages(pages) {
   return pages.filter((p2) => p2.unlisted !== true);
 }
@@ -489,8 +493,8 @@ function isFolderPageSlug(slug2) {
 var byDateAndAlphabeticalWithConfig = (cfg) => {
   const sortFn = byDateAndAlphabetical();
   return (f1, f22) => sortFn(
-    withDefaultDateType(f1, cfg.defaultDateType),
-    withDefaultDateType(f22, cfg.defaultDateType)
+    withResolvedDateType(f1, cfg),
+    withResolvedDateType(f22, cfg)
   );
 };
 var defaultOptions = (cfg) => ({
@@ -509,8 +513,7 @@ var RecentNotes_default = ((userOpts) => {
     displayClass,
     cfg
   }) => {
-    const globalCfg = cfg;
-    const opts = { ...defaultOptions(globalCfg), ...userOpts };
+    const opts = { ...defaultOptions(cfg), ...userOpts };
     const pages = filterListedPages(allFiles).filter((p2) => !opts.hideTagPages || !isTagPageSlug(p2.slug)).filter((p2) => !opts.hideFolderPages || !isFolderPageSlug(p2.slug)).filter(opts.filter).sort(opts.sort);
     const remaining = Math.max(0, pages.length - opts.limit);
     const slug2 = fileData.slug;
@@ -522,18 +525,7 @@ var RecentNotes_default = ((userOpts) => {
         const tags = page.frontmatter?.tags ?? [];
         return /* @__PURE__ */ u2("li", { class: "recent-li", children: /* @__PURE__ */ u2("div", { class: "section", children: [
           /* @__PURE__ */ u2("div", { class: "desc", children: /* @__PURE__ */ u2("h3", { children: /* @__PURE__ */ u2("a", { href: resolveRelative(slug2, page.slug), class: "internal", children: title }) }) }),
-          page.dates && getDate(withDefaultDateType(page, globalCfg.defaultDateType)) && /* @__PURE__ */ u2("p", { class: "meta", children: /* @__PURE__ */ u2(
-            "time",
-            {
-              datetime: getDate(
-                withDefaultDateType(page, globalCfg.defaultDateType)
-              ).toISOString(),
-              children: formatDate(
-                getDate(withDefaultDateType(page, globalCfg.defaultDateType)),
-                locale
-              )
-            }
-          ) }),
+          page.dates && getDate(withResolvedDateType(page, cfg)) && /* @__PURE__ */ u2("p", { class: "meta", children: /* @__PURE__ */ u2("time", { datetime: getDate(withResolvedDateType(page, cfg)).toISOString(), children: formatDate(getDate(withResolvedDateType(page, cfg)), locale) }) }),
           opts.showTags && /* @__PURE__ */ u2("ul", { class: "tags", children: tags.map((tag) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { class: "internal tag-link", href: resolveRelative(slug2, `tags/${tag}`), children: tag }) })) })
         ] }) });
       }) }),
@@ -544,6 +536,6 @@ var RecentNotes_default = ((userOpts) => {
   return RecentNotes;
 });
 
-export { RecentNotes_default as RecentNotes, filterListedPages, isFolderPageSlug, isTagPageSlug };
+export { RecentNotes_default as RecentNotes, filterListedPages, isFolderPageSlug, isTagPageSlug, resolveDefaultDateType, withResolvedDateType };
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

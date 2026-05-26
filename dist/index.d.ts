@@ -1,4 +1,4 @@
-import { QuartzPluginData, SortFn, QuartzComponent } from '@quartz-community/types';
+import { QuartzPluginData, SortFn, QuartzComponent, GlobalConfiguration, ValidDateType } from '@quartz-community/types';
 export { QuartzComponent, QuartzComponentProps, StringResource } from '@quartz-community/types';
 
 type RecentNotesPluginData = QuartzPluginData & Record<string, unknown>;
@@ -12,6 +12,16 @@ interface RecentNotesOptions {
     filter: (f: RecentNotesPluginData) => boolean;
     sort: SortFn;
 }
+/**
+ * Resolve the defaultDateType for a given page, preferring the per-file value
+ * set by the CreatedModifiedDate transformer, falling back to the global config.
+ */
+declare function resolveDefaultDateType(data: RecentNotesPluginData, cfg: GlobalConfiguration): ValidDateType | undefined;
+/**
+ * Return a copy of the page data with the resolved defaultDateType applied,
+ * so that getDate() from @quartz-community/utils/sort can read it.
+ */
+declare const withResolvedDateType: (data: RecentNotesPluginData, cfg: GlobalConfiguration) => QuartzPluginData;
 declare function filterListedPages<T>(pages: T[]): T[];
 /** True for Quartz tag-index slugs: `tags`, `tags/index`, or `tags/<anything>`. */
 declare function isTagPageSlug(slug: string | undefined): boolean;
@@ -19,4 +29,4 @@ declare function isTagPageSlug(slug: string | undefined): boolean;
 declare function isFolderPageSlug(slug: string | undefined): boolean;
 declare const _default: (userOpts?: Partial<RecentNotesOptions>) => QuartzComponent;
 
-export { _default as RecentNotes, type RecentNotesOptions, filterListedPages, isFolderPageSlug, isTagPageSlug };
+export { _default as RecentNotes, type RecentNotesOptions, filterListedPages, isFolderPageSlug, isTagPageSlug, resolveDefaultDateType, withResolvedDateType };
