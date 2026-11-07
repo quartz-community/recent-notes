@@ -1,4 +1,12 @@
 .recent-notes {
+  // let the component shrink inside a fixed-height sidebar and scroll instead
+  // of being cut off (jackyzha0/quartz#2463)
+  min-height: 0;
+  overflow-y: auto;
+  // a scroll container's automatic min-width is 0; keep the old min-content
+  // floor so it doesn't get squeezed narrower in row-direction (mobile) sidebars
+  min-width: min-content;
+
   & > h3 {
     margin: 0.5rem 0 0 0;
     font-size: 1rem;
@@ -6,8 +14,13 @@
 
   & > ul.recent-ul {
     list-style: none;
-    margin-top: 1rem;
+    margin: 0;
     padding-left: 0;
+    // when the component is `display: contents` (desktop-only / mobile-only),
+    // the list itself is the sidebar flex item that shrinks and scrolls
+    min-height: 0;
+    min-width: min-content;
+    overflow-y: auto;
 
     & > li {
       margin: 1rem 0;
