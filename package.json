@@ -1,6 +1,6 @@
 {
   "name": "@quartz-community/recent-notes",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Recent Notes component for Quartz - displays recently modified pages",
   "type": "module",
   "license": "MIT",
